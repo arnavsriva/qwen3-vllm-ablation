@@ -1,0 +1,20 @@
+# STATUS: draft — finalized after the level-by-level plan is approved.
+level: L5
+name: scheduler-tuning
+description: L4 + tuned max_num_seqs / max_num_batched_tokens / chunked prefill.
+engine: vllm
+model: Qwen/Qwen3-8B-AWQ
+common:
+  dtype: float16
+  max_model_len: 8192
+  seed: 0
+env:
+  VLLM_ATTENTION_BACKEND: FLASH_ATTN
+vllm:
+  gpu_memory_utilization: 0.90
+  enable_prefix_caching: false
+  quantization: awq_marlin
+  # PLAN-REVIEW: values chosen by a small sweep, not guessed.
+  max_num_seqs: 64
+  max_num_batched_tokens: 4096
+  enable_chunked_prefill: true

@@ -1,0 +1,57 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+.python-version
+
+# Private assistant notes (kept local, never committed)
+CLAUDE.md
+
+# Secrets
+.env
+.env.*
+!.env.example
+*.pem
+*-key.json
+service-account*.json
+
+# Model weights & caches (never commit)
+models/
+weights/
+checkpoints/
+*.safetensors
+*.bin
+*.pt
+*.pth
+*.gguf
+.cache/
+hf_cache/
+huggingface/
+
+# Large raw benchmark dumps (per-request logs). Summary JSONs in results/<level>/ ARE committed.
+results/**/raw/
+*.jsonl.gz
+*.nsys-rep
+*.qdrep
+
+# Logs / runtime
+*.log
+logs/
+*.pid
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/

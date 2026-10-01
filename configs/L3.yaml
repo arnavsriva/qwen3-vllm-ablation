@@ -1,0 +1,15 @@
+# STATUS: draft — finalized after the level-by-level plan is approved.
+level: L3
+name: flash-attention
+description: L2 + FlashAttention backend pinned explicitly and verified from server logs.
+engine: vllm
+model: Qwen/Qwen3-8B
+common:
+  dtype: bfloat16
+  max_model_len: 8192
+  seed: 0
+env:
+  VLLM_ATTENTION_BACKEND: FLASH_ATTN
+vllm:
+  gpu_memory_utilization: 0.90
+  enable_prefix_caching: false

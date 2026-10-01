@@ -1,0 +1,13 @@
+# STATUS: draft — finalized after the level-by-level plan is approved.
+level: L1
+name: hf-baseline
+description: Hugging Face transformers generate(), one request at a time, no batching.
+engine: hf
+model: Qwen/Qwen3-8B
+common:
+  dtype: bfloat16
+  max_model_len: 8192
+  seed: 0
+hf:
+  attn_implementation: sdpa
+  batch_size: 1
