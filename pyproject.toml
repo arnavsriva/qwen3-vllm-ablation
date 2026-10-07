@@ -24,19 +24,30 @@ dev = [
 bench = [
     "httpx>=0.27",
     "numpy>=1.26",
-    "pandas>=2.2",
     "matplotlib>=3.8",
 ]
-# GPU host only. Exact versions get pinned once the hardware plan is approved.
+# Launching runs on Modal (cloud/modal_app.py). Auth: `modal setup` once.
+cloud = [
+    "modal>=1.4",
+]
+# One-off: rebuild the committed workload files (scripts/build_workloads.py).
+workloads = [
+    "datasets>=2.19",
+    "transformers>=4.51",
+    "huggingface_hub>=0.23",
+]
+# GPU host only. Exact versions get pinned once the VM is up (recorded in every result).
 gpu = [
     "vllm",
     "transformers",
     "accelerate",
     "torch",
+    "fastapi",
+    "uvicorn",
 ]
 
 [tool.setuptools]
-packages = ["bench", "server"]
+packages = ["bench", "server", "cloud"]
 
 [tool.ruff]
 line-length = 100

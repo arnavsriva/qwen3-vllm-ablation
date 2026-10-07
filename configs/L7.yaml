@@ -1,22 +1,28 @@
-# STATUS: draft — finalized after the level-by-level plan is approved.
 level: L7
 name: speculative-decoding
 description: L6 + speculative decoding with Qwen3-0.6B as the draft model.
 engine: vllm
 model: Qwen/Qwen3-8B-AWQ
+workloads: [chat, rag, shared_prefix]
 common:
   dtype: float16
   max_model_len: 8192
   seed: 0
-env:
-  VLLM_ATTENTION_BACKEND: FLASH_ATTN
 vllm:
   gpu_memory_utilization: 0.90
   enable_prefix_caching: true
+  attention_backend: FLASH_ATTN
   quantization: awq_marlin
-  max_num_seqs: 64
-  max_num_batched_tokens: 4096
   enable_chunked_prefill: true
+  max_num_seqs: 64            # PENDING SWEEP (copied from L5)
+  max_num_batched_tokens: 4096  # PENDING SWEEP (copied from L5)
   speculative_config:
+    method: draft_model
     model: Qwen/Qwen3-0.6B
-    num_speculative_tokens: 4
+    num_speculative_tokens: 4   # PENDING SWEEP
+sweep:
+  workloads: [chat]
+  concurrency: [1, 16]
+  skip_quality: true
+  grid:
+    speculative_config.num_speculative_tokens: [2, 4, 6]

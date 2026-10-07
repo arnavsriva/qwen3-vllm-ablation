@@ -18,6 +18,7 @@ env/
 
 # Private assistant notes (kept local, never committed)
 CLAUDE.md
+notes/
 
 # Secrets
 .env
@@ -42,11 +43,14 @@ huggingface/
 
 # Large raw benchmark dumps (per-request logs). Summary JSONs in results/<level>/ ARE committed.
 results/**/raw/
+results/_smoke/
+*.tmp
 *.jsonl.gz
 *.nsys-rep
 *.qdrep
 
 # Logs / runtime
+.run/
 *.log
 logs/
 *.pid

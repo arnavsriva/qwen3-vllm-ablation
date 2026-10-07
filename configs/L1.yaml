@@ -1,13 +1,16 @@
-# STATUS: draft — finalized after the level-by-level plan is approved.
 level: L1
 name: hf-baseline
 description: Hugging Face transformers generate(), one request at a time, no batching.
 engine: hf
 model: Qwen/Qwen3-8B
+workloads: [chat, rag]
 common:
   dtype: bfloat16
   max_model_len: 8192
   seed: 0
 hf:
   attn_implementation: sdpa
-  batch_size: 1
+# L1 serves one request at a time, so cap the requests per cell to keep wall time bounded.
+# 64 = one full wave at the highest concurrency.
+bench_overrides:
+  num_requests: {chat: 64, rag: 64}

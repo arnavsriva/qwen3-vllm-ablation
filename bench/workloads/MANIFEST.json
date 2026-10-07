@@ -1,0 +1,83 @@
+{
+  "seed": 0,
+  "tokenizer": "Qwen/Qwen3-8B",
+  "sources": {
+    "ultrachat": {
+      "repo": "HuggingFaceH4/ultrachat_200k",
+      "config": null,
+      "split": "test_sft",
+      "license": "MIT",
+      "revision": "8049631c405ae6576f93f445c6b8166f76f5505a"
+    },
+    "squad_v2": {
+      "repo": "rajpurkar/squad_v2",
+      "config": null,
+      "split": "validation",
+      "license": "CC BY-SA 4.0",
+      "revision": "3ffb306f725f7d2ce8394bc1873b24868140c412"
+    },
+    "gsm8k": {
+      "repo": "openai/gsm8k",
+      "config": "main",
+      "split": "test",
+      "license": "MIT",
+      "revision": "740312add88f781978c0658806c59bc2815b9866"
+    }
+  },
+  "files": {
+    "bench/workloads/chat.jsonl": {
+      "rows": 256,
+      "sha256": "6286e2a245a335d35799f834e2adc70df357b2853ad8172215cd6a60f419e858",
+      "input_tokens": {
+        "min": 33,
+        "mean": 145.6,
+        "max": 507
+      }
+    },
+    "bench/workloads/rag.jsonl": {
+      "rows": 64,
+      "sha256": "bed5584b0da591453bac8b2f82817f4c6ba8b22b6fec232709a475311d00929c",
+      "input_tokens": {
+        "min": 3093,
+        "mean": 3202.5,
+        "max": 3567
+      }
+    },
+    "bench/workloads/shared_prefix.jsonl": {
+      "rows": 128,
+      "sha256": "fba9e15ec4bfb93984e1ba232e6920d4c29c8dbbd2b89506a7e5d25d9636a408",
+      "input_tokens": {
+        "min": 2210,
+        "mean": 2217.0,
+        "max": 2231
+      }
+    },
+    "bench/workloads/warmup.jsonl": {
+      "rows": 8,
+      "sha256": "ebf949d0c2b7bc34a41b71cb5dc900d8cb51bd9534016e0695bee3629f3c6845",
+      "input_tokens": {
+        "min": 17,
+        "mean": 43.6,
+        "max": 62
+      }
+    },
+    "bench/eval/gsm8k_100.jsonl": {
+      "rows": 100,
+      "sha256": "7091d1fce91b0a90a02509bba5b524a22fa4f510629b2256ab3ee86d3af2cd1a",
+      "input_tokens": {
+        "min": 50,
+        "mean": 83.4,
+        "max": 157
+      }
+    },
+    "bench/eval/agreement_50.jsonl": {
+      "rows": 50,
+      "sha256": "7b25902d7569727a3078cc1c3791eff6a887232ada77e471a67862289d8dcbec",
+      "input_tokens": {
+        "min": 38,
+        "mean": 97.3,
+        "max": 250
+      }
+    }
+  }
+}

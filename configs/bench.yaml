@@ -1,0 +1,39 @@
+# Shared benchmark settings — identical for every level so runs are comparable.
+seed: 0
+host: 127.0.0.1
+port: 8000
+concurrency: [1, 4, 16, 64]
+warmup_requests: 4
+server_start_timeout_s: 1800
+
+# Generation settings for the speed runs. ignore_eos forces exactly max_tokens output tokens
+# per request at every level, so a level can't look faster by writing shorter answers.
+generation:
+  max_tokens: 256
+  temperature: 0.0
+  ignore_eos: true
+  enable_thinking: false
+
+workloads:
+  chat:
+    file: bench/workloads/chat.jsonl
+    num_requests: 256
+  rag:
+    file: bench/workloads/rag.jsonl
+    num_requests: 64
+  shared_prefix:
+    file: bench/workloads/shared_prefix.jsonl
+    num_requests: 128
+warmup_file: bench/workloads/warmup.jsonl
+
+quality:
+  gsm8k:
+    file: bench/eval/gsm8k_100.jsonl
+    max_tokens: 512
+    concurrency: 8
+  agreement:
+    # Greedy outputs compared against the reference level (bf16, vLLM).
+    file: bench/eval/agreement_50.jsonl
+    max_tokens: 128
+    concurrency: 1
+    reference_level: L2

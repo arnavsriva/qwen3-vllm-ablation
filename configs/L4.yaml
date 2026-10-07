@@ -1,16 +1,15 @@
-# STATUS: draft — finalized after the level-by-level plan is approved.
 level: L4
 name: awq-4bit
 description: L3 + AWQ 4-bit weights (Marlin kernels).
 engine: vllm
 model: Qwen/Qwen3-8B-AWQ
+workloads: [chat, rag]
 common:
   dtype: float16
   max_model_len: 8192
   seed: 0
-env:
-  VLLM_ATTENTION_BACKEND: FLASH_ATTN
 vllm:
   gpu_memory_utilization: 0.90
   enable_prefix_caching: false
+  attention_backend: FLASH_ATTN
   quantization: awq_marlin

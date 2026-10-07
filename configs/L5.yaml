@@ -1,20 +1,28 @@
-# STATUS: draft — finalized after the level-by-level plan is approved.
 level: L5
 name: scheduler-tuning
-description: L4 + tuned max_num_seqs / max_num_batched_tokens / chunked prefill.
+description: L4 + tuned max_num_seqs / max_num_batched_tokens (chunked-prefill chunk size).
 engine: vllm
 model: Qwen/Qwen3-8B-AWQ
+workloads: [chat, rag, shared_prefix]
 common:
   dtype: float16
   max_model_len: 8192
   seed: 0
-env:
-  VLLM_ATTENTION_BACKEND: FLASH_ATTN
 vllm:
   gpu_memory_utilization: 0.90
   enable_prefix_caching: false
+  attention_backend: FLASH_ATTN
   quantization: awq_marlin
-  # PLAN-REVIEW: values chosen by a small sweep, not guessed.
+  enable_chunked_prefill: true
+  # PENDING SWEEP: replace with the winner of `make sweep LEVEL=L5`.
+  # Selection rule (fixed before running): highest output tok/s at concurrency 64 on chat,
+  # subject to TTFT p95 no worse than L4's at the same cell.
   max_num_seqs: 64
   max_num_batched_tokens: 4096
-  enable_chunked_prefill: true
+sweep:
+  workloads: [chat, rag]
+  concurrency: [16, 64]
+  skip_quality: true
+  grid:
+    max_num_batched_tokens: [2048, 4096, 8192]
+    max_num_seqs: [32, 64, 128]

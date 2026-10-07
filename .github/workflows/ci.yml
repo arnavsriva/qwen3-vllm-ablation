@@ -18,7 +18,7 @@ jobs:
           python-version: ${{ matrix.python-version }}
           cache: pip
       - name: Install (CPU only, no GPU deps)
-        run: pip install -e ".[dev]"
+        run: pip install -e ".[dev,bench]"
       - name: Ruff
         run: |
           ruff check .

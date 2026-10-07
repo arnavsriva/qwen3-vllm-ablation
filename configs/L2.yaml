@@ -1,15 +1,15 @@
-# STATUS: draft — finalized after the level-by-level plan is approved.
 level: L2
 name: vllm-defaults
 description: vLLM with PagedAttention + continuous batching, otherwise default engine args.
 engine: vllm
 model: Qwen/Qwen3-8B
+workloads: [chat, rag]
 common:
   dtype: bfloat16
   max_model_len: 8192
   seed: 0
 vllm:
   gpu_memory_utilization: 0.90
-  # PLAN-REVIEW: recent vLLM (V1 engine) turns prefix caching ON by default.
-  # Disabled here so L6 measures it in isolation.
+  # Deviation from pure defaults: vLLM enables prefix caching by default. Off here (and
+  # through L5) so L6 measures it in isolation.
   enable_prefix_caching: false
