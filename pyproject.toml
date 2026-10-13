@@ -19,6 +19,8 @@ dev = [
     "ruff>=0.6",
     "pytest>=8.0",
     "pre-commit>=3.7",
+    "fastapi>=0.110",   # L1 server HTTP layer is unit-tested on CPU
+    "uvicorn>=0.29",
 ]
 # Benchmark client side (runs anywhere; talks to the server over HTTP).
 bench = [

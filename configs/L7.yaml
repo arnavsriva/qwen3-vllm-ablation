@@ -25,4 +25,6 @@ sweep:
   concurrency: [1, 16]
   skip_quality: true
   grid:
-    speculative_config.num_speculative_tokens: [2, 4, 6]
+    # Widened after the L7 smoke test: ~50% draft acceptance on chat at k=4 made L7 slower
+    # than L4 at concurrency 1, so the optimum is probably at small k on an L4.
+    speculative_config.num_speculative_tokens: [1, 2, 3, 4, 6]

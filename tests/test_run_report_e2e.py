@@ -138,3 +138,18 @@ def test_report_ignores_partial_smoke_and_variant_runs():
         {**base, "started_at": "2026-01-02"},
     ]
     assert report.latest_complete(runs)["L2"]["started_at"] == "2026-01-02"
+
+
+def test_all_requests_failing_marks_run_failed_and_exits_nonzero(sandbox):
+    from tests.fake_server import FakeServer
+
+    with FakeServer(fail_every=1) as broken, pytest.raises(SystemExit) as exc:
+        run.main(["--level", "L2", "--base-url", broken.base_url, "--concurrency", "1"])
+    assert exc.value.code == 1
+    (path,) = (sandbox / "L2").glob("*.json")
+    data = json.loads(path.read_text())
+    assert data["status"] == "failed"
+    assert "all 4 requests failed" in data["failure"]
+    assert data["cells"][0]["num_ok"] == 0
+    # report.py must ignore it
+    assert report.latest_complete([data]) == {}

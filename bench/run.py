@@ -46,6 +46,10 @@ RESULTS_DIR = Path(os.environ.get("BENCH_RESULTS_DIR") or REPO_ROOT / "results")
 SCHEMA_VERSION = 1
 
 
+class RunFailed(RuntimeError):
+    """Every request in a cell (or in the quality eval) errored: the server is broken, not slow."""
+
+
 def now_stamp() -> str:
     return datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
 
@@ -143,6 +147,15 @@ async def run_quality(
     return out
 
 
+def fail(data: dict[str, Any], save: Any, reason: str) -> None:
+    """Mark the result file failed (report.py ignores it, resume won't pick it up) and abort."""
+    data["status"] = "failed"
+    data["failure"] = reason
+    data["finished_at"] = datetime.now(timezone.utc).isoformat()
+    save()
+    raise RunFailed(reason)
+
+
 async def run_cells(
     data: dict[str, Any],
     save: Any,
@@ -190,6 +203,11 @@ async def run_cells(
             raw.parent.mkdir(parents=True, exist_ok=True)
             raw.write_text("\n".join(json.dumps(r.record()) for r in results) + "\n")
             save()
+            if cell["num_ok"] == 0:
+                sample = (cell["errors_sample"] or ["?"])[0]
+                fail(
+                    data, save, f"{wl_name} c={conc}: all {len(results)} requests failed: {sample}"
+                )
             tok_s = cell["output_tok_per_s"] or 0
             ttft = (cell["ttft_ms"] or {}).get("p50", float("nan"))
             print(
@@ -270,6 +288,11 @@ def run_one(
                 acc = data["quality"]["gsm8k"]["accuracy"]
                 print(f"    gsm8k accuracy={acc}")
                 save()
+                agree = data["quality"]["agreement"]
+                if agree["num_errors"] and agree["num_errors"] == agree["source"]["num_used"]:
+                    fail(
+                        data, save, f"quality: all {agree['num_errors']} agreement requests failed"
+                    )
 
         asyncio.run(go())
         if handle:  # re-read: the log keeps growing after startup
@@ -300,6 +323,14 @@ def main(argv: list[str] | None = None) -> None:
     levels = LEVELS if args.level == "all" else (args.level,)
     if args.base_url and len(levels) > 1:
         ap.error("--base-url works with a single level")
+    try:
+        _run_levels(levels, bench, args, ap)
+    except RunFailed as e:
+        print(f"\nFAILED: {e}", file=sys.stderr)
+        sys.exit(1)
+
+
+def _run_levels(levels, bench: dict[str, Any], args: argparse.Namespace, ap) -> None:
     for level in levels:
         cfg = load_level(level)
         if args.sweep or args.variant:
