@@ -63,7 +63,7 @@ down:  ## Stop a local server started by run-level, and stop the Modal app if on
 modal-smoke:  ## Modal: tiny end-to-end run of one level → results/_smoke/: make modal-smoke LEVEL=L2
 	$(MODAL) run $(MODAL_APP) --level $(LEVEL) --quick
 
-modal-bench:  ## Modal: one full level in the background, then `make pull-results`: make modal-bench LEVEL=L3
+modal-bench:  ## Modal: full level(s) in the background, then `make pull-results`: make modal-bench LEVEL=L1,L2
 	$(MODAL) run --detach $(MODAL_APP) --level $(LEVEL) --background
 
 modal-sweep:  ## Modal: a level's sweep grid in the background: make modal-sweep LEVEL=L5

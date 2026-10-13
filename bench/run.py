@@ -306,9 +306,22 @@ def run_one(
     return path
 
 
+def parse_levels(spec: str) -> tuple[str, ...]:
+    """'all' → every level; 'L1,L3' → those, in order; 'L2' → one."""
+    if spec == "all":
+        return tuple(LEVELS)
+    levels = tuple(x.strip() for x in spec.split(",") if x.strip())
+    unknown = [x for x in levels if x not in LEVELS]
+    if unknown or not levels:
+        raise SystemExit(
+            f"unknown level(s) {unknown or spec!r}; expected {', '.join(LEVELS)} or all"
+        )
+    return levels
+
+
 def main(argv: list[str] | None = None) -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawTextHelpFormatter)
-    ap.add_argument("--level", required=True, help="L1..L7 or 'all'")
+    ap.add_argument("--level", required=True, help="L1..L7, a comma list like L1,L2,L3, or 'all'")
     ap.add_argument("--sweep", action="store_true", help="run every variant in the sweep grid")
     ap.add_argument("--variant", help="run one named sweep variant")
     ap.add_argument("--workloads", nargs="+")
@@ -320,7 +333,7 @@ def main(argv: list[str] | None = None) -> None:
     args = ap.parse_args(argv)
 
     bench = load_bench()
-    levels = LEVELS if args.level == "all" else (args.level,)
+    levels = parse_levels(args.level)
     if args.base_url and len(levels) > 1:
         ap.error("--base-url works with a single level")
     try:

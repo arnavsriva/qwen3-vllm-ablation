@@ -3,7 +3,8 @@
     modal run cloud/modal_app.py --level L2 --quick       # smoke test → results/_smoke/
     modal run cloud/modal_app.py --level L3               # one full level, then pull results
     modal run cloud/modal_app.py --level L5 --sweep
-    modal run cloud/modal_app.py --level all --background # fire and forget; pull later
+    modal run cloud/modal_app.py --level L1,L2,L3,L4 --background  # a phase, fire and forget
+    modal run cloud/modal_app.py --level all --background
     modal run cloud/modal_app.py --pull                   # copy the results volume → results/
 
 The repo (minus caches, results, .git) is shipped into the container and `bench.run` runs

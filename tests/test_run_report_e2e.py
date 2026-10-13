@@ -153,3 +153,11 @@ def test_all_requests_failing_marks_run_failed_and_exits_nonzero(sandbox):
     assert data["cells"][0]["num_ok"] == 0
     # report.py must ignore it
     assert report.latest_complete([data]) == {}
+
+
+def test_parse_levels():
+    assert run.parse_levels("all") == tuple(config.LEVELS)
+    assert run.parse_levels("L1, L3,L4") == ("L1", "L3", "L4")
+    assert run.parse_levels("L2") == ("L2",)
+    with pytest.raises(SystemExit):
+        run.parse_levels("L9")
