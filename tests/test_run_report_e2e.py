@@ -161,3 +161,41 @@ def test_parse_levels():
     assert run.parse_levels("L2") == ("L2",)
     with pytest.raises(SystemExit):
         run.parse_levels("L9")
+
+
+def test_sweeps_run_only_the_cells_their_pick_rule_needs():
+    import argparse
+
+    bench = config.load_bench()
+    assert bench["warm_restart"] is True
+
+    def plan(level, sweep):
+        args = argparse.Namespace(
+            sweep=sweep,
+            variant=None,
+            workloads=None,
+            concurrency=None,
+            num_requests=None,
+            quick=False,
+            skip_quality=False,
+        )
+        return run.plan_run(config.load_level(level), bench, args)
+
+    assert plan("L3", True) == {
+        "workloads": {"chat": 256, "rag": 64},
+        "concurrency": [16, 64],
+        "skip_quality": True,
+    }
+    assert plan("L5", True) == {
+        "workloads": {"chat": 256},
+        "concurrency": [64],
+        "skip_quality": True,
+    }
+    assert plan("L7", True) == {
+        "workloads": {"chat": 64},
+        "concurrency": [1, 16],
+        "skip_quality": True,
+    }
+    # Main runs are untouched by the sweep section.
+    assert plan("L7", False)["workloads"] == {"chat": 256, "rag": 64, "shared_prefix": 128}
+    assert plan("L7", False)["concurrency"] == [1, 4, 16, 64]

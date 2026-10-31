@@ -1,0 +1,3 @@
+level,gsm8k_accuracy,gsm8k_n,agreement_vs,exact_match_rate,mean_prefix_fraction,source
+L1,0.97,100,L2,0.2,0.4635455811535135,results/L1/20261013T153711Z.json
+L2,0.96,100,,,,results/L2/20261013T184949Z.json

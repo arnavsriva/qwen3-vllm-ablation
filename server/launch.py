@@ -88,6 +88,7 @@ class ServerHandle:
     argv: list[str]
     env: dict[str, str]
     proc: subprocess.Popen | None = None
+    warm_log_path: Path | None = None  # log of the discarded cache-warming start, if any
 
     def alive(self) -> bool:
         if self.proc is not None:
@@ -131,7 +132,29 @@ def log_evidence(path: Path, limit: int = 60) -> list[str]:
 
 
 def start(
-    cfg: dict[str, Any], *, host: str, port: int, log_path: Path, timeout_s: float
+    cfg: dict[str, Any],
+    *,
+    host: str,
+    port: int,
+    log_path: Path,
+    timeout_s: float,
+    warm_restart: bool = False,
+) -> ServerHandle:
+    """Start the level's server. With warm_restart, vLLM is started twice and only the second
+    start is measured: a cold torch.compile / kernel-JIT cache inflates vLLM's memory
+    profiling and costs ~1 GiB of KV cache, which would make runs incomparable."""
+    warm_log = None
+    if warm_restart and cfg["engine"] == "vllm":
+        warm_log = log_path.with_name(f"{log_path.stem}.warm{log_path.suffix}")
+        _start_once(cfg, host, port, warm_log, timeout_s)
+        stop()
+    handle = _start_once(cfg, host, port, log_path, timeout_s)
+    handle.warm_log_path = warm_log
+    return handle
+
+
+def _start_once(
+    cfg: dict[str, Any], host: str, port: int, log_path: Path, timeout_s: float
 ) -> ServerHandle:
     if STATE_FILE.exists():
         stop()

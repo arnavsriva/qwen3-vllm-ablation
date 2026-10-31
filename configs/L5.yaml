@@ -19,9 +19,10 @@ vllm:
   # subject to TTFT p95 no worse than L4's at the same cell.
   max_num_seqs: 64
   max_num_batched_tokens: 4096
+# The pick rule only uses chat at concurrency 64, so the sweep runs only that cell.
 sweep:
-  workloads: [chat, rag]
-  concurrency: [16, 64]
+  workloads: [chat]
+  concurrency: [64]
   skip_quality: true
   grid:
     max_num_batched_tokens: [2048, 4096, 8192]

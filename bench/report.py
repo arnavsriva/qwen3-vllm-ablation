@@ -141,7 +141,7 @@ def provenance_rows(runs: dict[str, dict[str, Any]]) -> list[list[str]]:
                 r["config"]["name"],
                 gpus[0].get("name") or "–",
                 env.get("driver_version") or "–",
-                env.get("cuda_driver_api_version") or "–",
+                env.get("cuda_driver_api_version") or env.get("torch_cuda_version") or "–",
                 _g(env, "versions", "vllm") or "–",
                 r["started_at"][:19],
                 f"`{r['_path']}`",

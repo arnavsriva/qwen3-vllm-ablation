@@ -162,6 +162,8 @@ def bench(argv: list[str], git_sha: str | None, git_dirty: bool | None) -> int:
     env["BENCH_GIT_SHA"] = git_sha or ""
     if git_dirty is not None:
         env["BENCH_GIT_DIRTY"] = "1" if git_dirty else "0"
+    for vol in (hf_cache, vllm_cache):
+        vol.reload()  # see weights / compile caches committed by other containers
     subprocess.run(["nvidia-smi"], check=False)
     print(f"$ python -m bench.run {shlex.join(argv)}", flush=True)
     try:

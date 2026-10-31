@@ -20,9 +20,12 @@ vllm:
     method: draft_model
     model: Qwen/Qwen3-0.6B
     num_speculative_tokens: 4   # PENDING SWEEP
+# Selection rule (fixed before running): highest output tok/s at concurrency 1 on chat
+# (speculative decoding is a latency optimization); concurrency 16 is reported beside it.
 sweep:
   workloads: [chat]
   concurrency: [1, 16]
+  num_requests: 64
   skip_quality: true
   grid:
     # Widened after the L7 smoke test: ~50% draft acceptance on chat at k=4 made L7 slower

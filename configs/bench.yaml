@@ -5,6 +5,10 @@ port: 8000
 concurrency: [1, 4, 16, 64]
 warmup_requests: 4
 server_start_timeout_s: 1800
+# vLLM servers are started twice; only the second (warm-cache) start is measured. A cold
+# torch.compile / kernel-JIT cache inflates vLLM's startup memory profiling and shrinks the
+# KV cache, which made otherwise identical runs differ by ~20% throughput at high concurrency.
+warm_restart: true
 
 # Generation settings for the speed runs. ignore_eos forces exactly max_tokens output tokens
 # per request at every level, so a level can't look faster by writing shorter answers.

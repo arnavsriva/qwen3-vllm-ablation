@@ -102,6 +102,8 @@ def plan_run(cfg: dict[str, Any], bench: dict[str, Any], args: argparse.Namespac
     counts = {}
     for name in wl_names:
         n = overrides.get(name, bench["workloads"][name]["num_requests"])
+        if sweep.get("num_requests"):
+            n = min(n, int(sweep["num_requests"]))
         if args.num_requests:
             n = args.num_requests
         elif args.quick:
@@ -264,11 +266,16 @@ def run_one(
                 port=bench["port"],
                 log_path=log_path,
                 timeout_s=bench["server_start_timeout_s"],
+                warm_restart=bool(bench.get("warm_restart")),
             )
             base_url = handle.base_url
             data["server"] = {
                 "argv": handle.argv,
                 "env": handle.env,
+                "warm_restart": handle.warm_log_path is not None,
+                "warm_log_evidence": (
+                    launch.log_evidence(handle.warm_log_path) if handle.warm_log_path else None
+                ),
                 "log_evidence": launch.log_evidence(log_path),
             }
         data["env"] = collect_env()

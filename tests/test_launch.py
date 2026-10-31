@@ -87,3 +87,32 @@ def test_log_evidence_filters(tmp_path):
     )
     lines = log_evidence(log)
     assert lines == ["INFO Using FLASH_ATTN attention backend", "INFO Prefix caching is disabled"]
+
+
+def test_warm_restart_starts_vllm_twice_but_hf_once(monkeypatch, tmp_path):
+    from server import launch
+
+    calls = []
+
+    def fake_once(cfg, host, port, log_path, timeout_s):
+        calls.append(("start", log_path.name))
+        return launch.ServerHandle(1, "http://x", log_path, [], {})
+
+    monkeypatch.setattr(launch, "_start_once", fake_once)
+    monkeypatch.setattr(launch, "stop", lambda: calls.append(("stop", None)))
+    log = tmp_path / "server.log"
+    h = launch.start(
+        load_level("L2"), host="h", port=1, log_path=log, timeout_s=1, warm_restart=True
+    )
+    assert calls == [("start", "server.warm.log"), ("stop", None), ("start", "server.log")]
+    assert h.warm_log_path == tmp_path / "server.warm.log"
+
+    calls.clear()
+    h = launch.start(
+        load_level("L1"), host="h", port=1, log_path=log, timeout_s=1, warm_restart=True
+    )
+    assert calls == [("start", "server.log")] and h.warm_log_path is None
+
+    calls.clear()
+    launch.start(load_level("L2"), host="h", port=1, log_path=log, timeout_s=1)
+    assert calls == [("start", "server.log")]

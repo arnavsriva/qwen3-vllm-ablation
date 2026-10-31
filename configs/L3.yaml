@@ -13,6 +13,10 @@ vllm:
   enable_prefix_caching: false
   attention_backend: FLASH_ATTN
 # Side comparison: same level, other attention backends (`make sweep LEVEL=L3`).
+# Only the high-concurrency cells: at concurrency 1 every backend is memory-bound and equal.
 sweep:
+  workloads: [chat, rag]
+  concurrency: [16, 64]
+  skip_quality: true
   grid:
     attention_backend: [FLASH_ATTN, FLASHINFER, TRITON_ATTN]
